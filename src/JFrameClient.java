@@ -1,3 +1,8 @@
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -10,6 +15,10 @@
  */
 public class JFrameClient extends javax.swing.JFrame {
 
+    static Socket conexao;
+    static DataInputStream in;
+    static DataOutputStream out;    
+    
     /**
      * Creates new form JFrame
      */
@@ -31,15 +40,14 @@ public class JFrameClient extends javax.swing.JFrame {
         textArea1 = new java.awt.TextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cliente");
 
-        jButton1.setText("jButton1");
+        jButton1.setText("Enviar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-
-        jTextField1.setText("jTextField1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -50,7 +58,7 @@ public class JFrameClient extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(textArea1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
@@ -72,6 +80,13 @@ public class JFrameClient extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+         try {
+            String mensagem_enviada = jTextField1.getText();
+            out.writeUTF(mensagem_enviada);
+            jTextField1.setText("");
+            textArea1.setText(textArea1.getText() + "Cliente: " + mensagem_enviada + "\n");
+        } catch (Exception e) {
+        } 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -110,11 +125,25 @@ public class JFrameClient extends javax.swing.JFrame {
                 new JFrameClient().setVisible(true);
             }
         });
+        
+        
+        try {
+            conexao = new Socket("127.0.0.1", 12345);
+            in = new DataInputStream(conexao.getInputStream());
+            out = new DataOutputStream(conexao.getOutputStream());            
+            String mensagem_recebida = "";
+            while(true){
+                mensagem_recebida = in.readUTF();
+                textArea1.setText(textArea1.getText() + "Server: " + mensagem_recebida + "\n");
+            }
+        } catch (Exception e) {
+        }        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JTextField jTextField1;
-    private java.awt.TextArea textArea1;
+    private static java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
+
 }
